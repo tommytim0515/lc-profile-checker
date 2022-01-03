@@ -1,16 +1,9 @@
 import time
 import regex as re
+from constants import *
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from pyvirtualdisplay import Display
-
-CHROMEDRIVER_PATH = '/usr/bin/chromedriver'
-URL_PREFIX = 'https://leetcode.com/'
-ACCPET_KEYWORD = 'Accepted'
-ACCEPT_TOKENS = ('minute', 'minutes', 'hour', 'hours')
-PAGE_LOAD_TIME = 5  # seconds
-EXTENDED_PAGE_LOAD_TIME = 10  # seconds
-RETRY_NUM = 5
 
 
 def scraping(url: str, page_load_timeout: int) -> BeautifulSoup:
@@ -34,8 +27,8 @@ def scraping(url: str, page_load_timeout: int) -> BeautifulSoup:
     return BeautifulSoup(html, 'lxml')
 
 
-def check_today_submission(user_name: str, page_load_timeout: int) -> bool:
-    page = scraping(URL_PREFIX + user_name, page_load_timeout)
+def check_today_submission(username: str, page_load_timeout: int) -> bool:
+    page = scraping(URL_PREFIX + username, page_load_timeout)
     profile_root = page.find('div', id='profile-root')
     profile_content = profile_root.find(
         'div', {'class': re.compile('^profile-content_')})
@@ -53,13 +46,14 @@ def check_today_submission(user_name: str, page_load_timeout: int) -> bool:
                 return True
     return False
 
-def check_today_submission_with_retry(user_name: str, retry_count: int) -> bool:
-    if check_today_submission(user_name, PAGE_LOAD_TIME):
+
+def check_today_submission_with_retry(username: str, retry_count: int) -> bool:
+    if check_today_submission(username, PAGE_LOAD_TIME):
         return True
     if retry_count <= 0:
         return False
     while retry_count > 0:
-        if check_today_submission(user_name, EXTENDED_PAGE_LOAD_TIME):
+        if check_today_submission(username, EXTENDED_PAGE_LOAD_TIME):
             return True
         retry_count -= 1
     return False
