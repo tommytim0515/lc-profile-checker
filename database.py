@@ -53,6 +53,8 @@ class Database:
 
     def get_undistributed_balance(self) -> int:
         if UNDISTRIBUTED_KEY not in self.db:
+            self.db[UNDISTRIBUTED_KEY] = '0'
+            self.db[LAST_UPDATE_KEY] = str(time.time())
             return 0
         return int(self.db[UNDISTRIBUTED_KEY])
 
