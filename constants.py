@@ -4,6 +4,7 @@ DATABASE_DIR = 'db'
 DATABASE_NAME = 'test_storage'
 LAST_UPDATE_KEY = 'last_update'
 MUTEX_KEY = 'mutex'
+UNDISTRIBUTED_KEY = 'undistributed'
 
 # web scraping
 CHROMEDRIVER_PATH = '/usr/bin/chromedriver'
@@ -16,3 +17,5 @@ RETRY_NUM = 5
 
 # main
 CONFIG_FILE_DIR = 'config.ini'
+DEPOSIT = 5
+CHECK_TIME = '00:01'

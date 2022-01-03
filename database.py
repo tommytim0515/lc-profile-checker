@@ -3,6 +3,7 @@ import dbm
 import time
 from constants import *
 
+
 def open_database(db_name: str) -> any:
     return dbm.open(db_name, 'c')
 
@@ -45,6 +46,15 @@ class Database:
         if username not in self.db:
             return None
         return int(self.db[username])
+
+    def update_undistributed_balance(self, amount: int) -> None:
+        self.db[UNDISTRIBUTED_KEY] = str(amount)
+        self.db[LAST_UPDATE_KEY] = str(time.time())
+
+    def get_undistributed_balance(self) -> int:
+        if UNDISTRIBUTED_KEY not in self.db:
+            return 0
+        return int(self.db[UNDISTRIBUTED_KEY])
 
 
 if __name__ == '__main__':
