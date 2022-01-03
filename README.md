@@ -1,1 +1,1 @@
-# lc-profile-checker
+# LeetCode Daily Profile Checker
