@@ -2,6 +2,8 @@ import os
 import dbm
 import time
 from constants import *
+from datetime import datetime
+from typing import Tuple
 
 
 def open_database(db_name: str) -> any:
@@ -39,14 +41,17 @@ class Database:
 
     @mutex_lock
     def update_user_balance(self, username: str, balance: int):
-        self.db[username] = str(balance)
+        key = BALANCE_PREFIX + username
+        self.db[key] = str(balance)
         self.db[LAST_UPDATE_KEY] = str(time.time())
 
     def get_user_balance(self, username: str):
-        if username not in self.db:
+        key = BALANCE_PREFIX + username
+        if key not in self.db:
             return None
-        return int(self.db[username])
+        return int(self.db[key])
 
+    @mutex_lock
     def update_undistributed_balance(self, amount: int) -> None:
         self.db[UNDISTRIBUTED_KEY] = str(amount)
         self.db[LAST_UPDATE_KEY] = str(time.time())
@@ -57,6 +62,20 @@ class Database:
             self.db[LAST_UPDATE_KEY] = str(time.time())
             return 0
         return int(self.db[UNDISTRIBUTED_KEY])
+
+    @mutex_lock
+    def update_accepted_num_and_time(self, username: str, accepted_num: int) -> None:
+        key = ACCEPTED_PREFIX + username
+        self.db[key] = str(accepted_num) + ' ' + \
+            datetime.now().strftime(DATETIME_FORMAT)
+        self.db[LAST_UPDATE_KEY] = str(time.time())
+
+    def get_accepted_num_and_time(self, username: str) -> Tuple[int, str]:
+        key = ACCEPTED_PREFIX + username
+        if key not in self.db:
+            return None
+        accepted_num, time_str = self.db[key].decode().split(' ')
+        return int(accepted_num), time_str
 
 
 if __name__ == '__main__':
