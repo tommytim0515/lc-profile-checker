@@ -1,35 +1,41 @@
+from typing import Text
 import requests
 import json
 
 headers = {
-    "accept": "*/*",
-    "accept-language": "en",
-    "content-type": "application/json",
-    "sec-ch-ua": "\" Not;A Brand\";v=\"99\", \"Google Chrome\";v=\"91\", \"Chromium\";v=\"91\"",
-    "sec-ch-ua-mobile": "?0",
-    "sec-fetch-dest": "empty",
-    "sec-fetch-mode": "cors",
-    "sec-fetch-site": "same-origin"
+    'authority': 'leetcode.com',
+    'sec-ch-ua': '" Not A;Brand";v="99", "Chromium";v="96", "Google Chrome";v="96"',
+    'accept': '*/*',
+    'accept-language': 'en',
+    'content-type': 'application/json',
+    'sec-ch-ua-mobile': '?0',
+    'sec-fetch-dest': 'empty',
+    'sec-fetch-mode': 'cors',
+    'sec-fetch-site': 'same-origin',
+    'referer': '',
+    'cookie': ''
 }
 
-def get_user_info(userSlug):
+query = '{"operationName": "getUserProfile","variables": {"username": "%s"},' \
+        '"query": "query getUserProfile($username: String!) {\\n    ' \
+        'matchedUser(username: $username) {\\n    username\\n    submissionCalendar\\n    ' \
+        'submitStats: submitStatsGlobal {\\n    acSubmissionNum {\\n    difficulty\\n    ' \
+        'count\\n    submissions\\n    __typename\\n    }\\n    __typename\\n    }\\n    __typename\\n}\\n}\\n"}'
+
+url = 'https://leetcode.com/'
 
 
-    data = "{\"operationName\":\"recentSubmissions\",\"variables\":{\"userSlug\":\"%s\"},\"query\":\"query " \
-           "recentSubmissionList($username: String!) {\\n  recentSubmissionList(username: $userSlug) {\\n    status\\n    " \
-           "lang\\n    source {\\n      sourceType\\n      ... on SubmissionSrcLeetbookNode {\\n        slug\\n        " \
-           "title\\n        pageId\\n        __typename\\n      }\\n      __typename\\n    }\\n    question {\\n      " \
-           "questionFrontendId\\n      title\\n      translatedTitle\\n      titleSlug\\n      __typename\\n    }\\n    " \
-           "submitTime\\n    __typename\\n  }\\n}\\n\"}" % userSlug
+def get_user_info(username):
+    s = requests.Session()
+    # r = s.post(url, data=query, headers=headers)
+    r = s.get(url+username, headers=headers)
+    csrf = r.cookies.get_dict()['csrftoken']
+    headers['cookie'] = 'csrftoken=' + csrf
+    headers['referer'] = url+username
+    data = query % username
+    r = s.post(url+'graphql', cookies=s.cookies, data=data, headers=headers)
+    print(r.text)
 
-    url = "https://leetcode.com/graphql"
-
-    r_json = requests.post(url=url, headers=headers, data=data).json()
-    print(r_json)
-    recentSubmissions = r_json['data']['recentSubmissions']
-    return recentSubmissions
 
 if __name__ == '__main__':
-    userSlug = 'xu-tian-yu'
-    res = get_user_info(userSlug)
-    print(res)
+    get_user_info("TommyTim0515")
