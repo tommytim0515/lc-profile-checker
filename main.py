@@ -55,6 +55,8 @@ def check_everyday_submission():
     for account in ACCOUNTS:
         if account.check_today_submission():
             finished_accounts.append(account)
+    if len(finished_accounts) <= 0:
+        return
     current_undistributed_balance = DATABASE.get_undistributed_balance()
     reward_per_account = current_undistributed_balance // len(
         finished_accounts)
@@ -62,21 +64,25 @@ def check_everyday_submission():
         account.update_balance(account.get_balance() + reward_per_account)
     DATABASE.update_undistributed_balance(
         current_undistributed_balance - reward_per_account * len(finished_accounts))
+    
+
+def print_info():
     for account in ACCOUNTS:
-        print(f'{account.username}: {account.get_balance()}')
+            print(f'{account.username}: {account.get_balance()}')
     print(f'Undistributed: {DATABASE.get_undistributed_balance()}')
     print(datetime.now())
-
 
 def main():
     init()
     if DATABASE is None:
         print('Database not initialized.')
     print(datetime.now())
-    schedule.every().day.at(CHECK_TIME).do(check_everyday_submission)
+    check_everyday_submission()
+    print_info()
+    # schedule.every().day.at(CHECK_TIME).do(check_everyday_submission)
     # schedule.every(5).minutes.do(check_everyday_submission)
-    while True:
-        schedule.run_pending()
+    # while True:
+        # schedule.run_pending()
 
 
 if __name__ == '__main__':

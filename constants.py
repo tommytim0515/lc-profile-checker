@@ -18,4 +18,4 @@ RETRY_NUM = 5
 # main
 CONFIG_FILE_DIR = 'config.ini'
 DEPOSIT = 5
-CHECK_TIME = '00:01'
+CHECK_TIME = '01:00'
