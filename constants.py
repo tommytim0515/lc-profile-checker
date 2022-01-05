@@ -44,4 +44,4 @@ POSTFIX_GRAPHQL = 'graphql'
 # main
 CONFIG_FILE_DIR = 'config.ini'
 DEPOSIT = 5
-CHECK_TIME = '01:00'
+CHECK_TIME = '00:30'

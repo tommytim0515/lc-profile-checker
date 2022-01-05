@@ -31,6 +31,21 @@ def get_usernames(config: dict) -> List:
     return config['usernames'].split(',')
 
 
+def print_info(func) -> None:
+    def wrapper() -> None:
+        func()
+        for account in ACCOUNTS:
+            accepted_num, _ = account.get_accepted_num_and_time()
+            print(
+                f'{account.username}:\n Balance: {account.get_balance()}, Accepted: {accepted_num}')
+        if DATABASE is None:
+            return
+        print(f'Undistributed: {DATABASE.get_undistributed_balance()}')
+        print(datetime.now())
+    return wrapper
+
+
+@print_info
 def init() -> None:
     if not os.path.exists(DATABASE_DIR):
         os.makedirs(DATABASE_DIR)
@@ -47,11 +62,9 @@ def init() -> None:
         account.update_balance(0)
         accepted_num = account.check_today_accepted()
         account.update_accepted_num_and_time(accepted_num)
-    for account in ACCOUNTS:
-        print(f'{account.username}: {account.get_balance()}')
-    print(f'Undistributed: {DATABASE.get_undistributed_balance()}')
 
 
+@print_info
 def check_everyday_submission() -> None:
     if DATABASE is None:
         return
@@ -73,6 +86,7 @@ def check_everyday_submission() -> None:
         current_undistributed_balance - reward_per_account * len(finished_accounts))
 
 
+@print_info
 def check_everyday_accepted() -> None:
     if DATABASE is None:
         return
@@ -81,6 +95,8 @@ def check_everyday_accepted() -> None:
         current_undistributed_balance + DEPOSIT * len(ACCOUNTS))
     finished_accounts = []
     for account in ACCOUNTS:
+        curr_balance = account.get_balance()
+        account.update_balance(curr_balance - DEPOSIT)
         accepted_num = account.check_today_accepted()
         prev_ac_num, _ = account.get_accepted_num_and_time()
         if prev_ac_num is None:
@@ -99,24 +115,13 @@ def check_everyday_accepted() -> None:
         current_undistributed_balance - reward_per_account * len(finished_accounts))
 
 
-def print_info() -> None:
-    for account in ACCOUNTS:
-        accepted_num, _ = account.get_accepted_num_and_time()
-        print(f'{account.username}:\n Balance: {account.get_balance()}, Accepted: {accepted_num}')
-    if DATABASE is None:
-        return
-    print(f'Undistributed: {DATABASE.get_undistributed_balance()}')
-    print(datetime.now())
-
-
 def main() -> None:
     init()
     if DATABASE is None:
         print('Database not initialized.')
-    print(datetime.now())
+        return
     # check_everyday_submission()
     # check_everyday_accepted()
-    # print_info()
     schedule.every().day.at(CHECK_TIME).do(check_everyday_accepted)
     # schedule.every(5).minutes.do(check_everyday_submission)
     while True:
