@@ -3,26 +3,26 @@ import dbm
 import time
 from constants import *
 from datetime import datetime
-from typing import Tuple
+from typing import Any, Callable, Tuple, Optional
 
 
-def open_database(db_name: str) -> any:
+def open_database(db_name: str) -> Any:
     return dbm.open(db_name, 'c')
 
 
 class Database:
-    def __init__(self, db_name: str):
+    def __init__(self, db_name: str) -> None:
         self.db_name = db_name
         self.db = open_database(os.path.join(DATABASE_DIR, db_name))
         self.db[MUTEX_KEY] = '0'
 
-    def __del__(self):
+    def __del__(self) -> None:
         self.db.close()
 
-    def get_last_update(self):
+    def get_last_update(self) -> float:
         return float(self.db[LAST_UPDATE_KEY])
 
-    def mutex_lock(func):
+    def mutex_lock(func: Any) -> Callable:
         def wrapper(self, *args, **kwargs):
             while int(self.db[MUTEX_KEY]) == '1':
                 time.sleep(0.01)
@@ -70,10 +70,10 @@ class Database:
             datetime.now().strftime(DATETIME_FORMAT)
         self.db[LAST_UPDATE_KEY] = str(time.time())
 
-    def get_accepted_num_and_time(self, username: str) -> Tuple[int, str]:
+    def get_accepted_num_and_time(self, username: str) -> Tuple[Optional[int], Optional[str]]:
         key = ACCEPTED_PREFIX + username
         if key not in self.db:
-            return None
+            return None, None
         accepted_num, time_str = self.db[key].decode().split(' ')
         return int(accepted_num), time_str
 

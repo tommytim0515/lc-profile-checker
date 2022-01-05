@@ -1,8 +1,8 @@
 import webscraping
 import database
 import leetcodeapi
-from typing import Tuple
-from datetime import datetime
+from typing import Tuple, Optional
+
 
 class Account:
     def __init__(self, username, total_balance, db: database.Database):
@@ -35,7 +35,7 @@ class Account:
         user_profile = leetcodeapi.acquire_user_profile(self.username)
         return leetcodeapi.get_user_solved_problem_count(user_profile)
 
-    def get_accepted_num_and_time(self) -> Tuple[int, str]:
+    def get_accepted_num_and_time(self) -> Tuple[Optional[int], Optional[str]]:
         return self.db.get_accepted_num_and_time(self.username)
 
     def update_accepted_num_and_time(self, accepted_num: int) -> None:

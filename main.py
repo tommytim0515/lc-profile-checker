@@ -31,7 +31,7 @@ def get_usernames(config: dict) -> List:
     return config['usernames'].split(',')
 
 
-def init():
+def init() -> None:
     if not os.path.exists(DATABASE_DIR):
         os.makedirs(DATABASE_DIR)
     previous_db_files = glob.glob(os.path.join(DATABASE_DIR, '*'))
@@ -52,7 +52,9 @@ def init():
     print(f'Undistributed: {DATABASE.get_undistributed_balance()}')
 
 
-def check_everyday_submission():
+def check_everyday_submission() -> None:
+    if DATABASE is None:
+        return
     current_undistributed_balance = DATABASE.get_undistributed_balance()
     DATABASE.update_undistributed_balance(
         current_undistributed_balance + DEPOSIT * len(ACCOUNTS))
@@ -71,7 +73,9 @@ def check_everyday_submission():
         current_undistributed_balance - reward_per_account * len(finished_accounts))
 
 
-def check_everyday_accepted():
+def check_everyday_accepted() -> None:
+    if DATABASE is None:
+        return
     current_undistributed_balance = DATABASE.get_undistributed_balance()
     DATABASE.update_undistributed_balance(
         current_undistributed_balance + DEPOSIT * len(ACCOUNTS))
@@ -79,6 +83,8 @@ def check_everyday_accepted():
     for account in ACCOUNTS:
         accepted_num = account.check_today_accepted()
         prev_ac_num, _ = account.get_accepted_num_and_time()
+        if prev_ac_num is None:
+            continue
         if accepted_num > prev_ac_num:
             finished_accounts.append(account)
         account.update_accepted_num_and_time(accepted_num)
@@ -93,15 +99,17 @@ def check_everyday_accepted():
         current_undistributed_balance - reward_per_account * len(finished_accounts))
 
 
-def print_info():
+def print_info() -> None:
     for account in ACCOUNTS:
         accepted_num, _ = account.get_accepted_num_and_time()
         print(f'{account.username}:\n Balance: {account.get_balance()}, Accepted: {accepted_num}')
+    if DATABASE is None:
+        return
     print(f'Undistributed: {DATABASE.get_undistributed_balance()}')
     print(datetime.now())
 
 
-def main():
+def main() -> None:
     init()
     if DATABASE is None:
         print('Database not initialized.')
