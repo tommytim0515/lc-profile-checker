@@ -7,14 +7,14 @@ from typing import Any, Callable, Tuple, Optional
 
 
 def open_database(db_name: str) -> Any:
-    return dbm.open(db_name, 'c')
+    return dbm.open(db_name, "c")
 
 
 class Database:
     def __init__(self, db_name: str) -> None:
         self.db_name = db_name
         self.db = open_database(os.path.join(DATABASE_DIR, db_name))
-        self.db[MUTEX_KEY] = '0'
+        self.db[MUTEX_KEY] = "0"
 
     def __del__(self) -> None:
         self.db.close()
@@ -24,11 +24,12 @@ class Database:
 
     def mutex_lock(func: Any) -> Callable:
         def wrapper(self, *args, **kwargs):
-            while int(self.db[MUTEX_KEY]) == '1':
+            while int(self.db[MUTEX_KEY]) == "1":
                 time.sleep(0.01)
-            self.db[MUTEX_KEY] = '1'
+            self.db[MUTEX_KEY] = "1"
             func(self, *args, **kwargs)
-            self.db[MUTEX_KEY] = '0'
+            self.db[MUTEX_KEY] = "0"
+
         return wrapper
 
     @mutex_lock
@@ -58,25 +59,30 @@ class Database:
 
     def get_undistributed_balance(self) -> int:
         if UNDISTRIBUTED_KEY not in self.db:
-            self.db[UNDISTRIBUTED_KEY] = '0'
+            self.db[UNDISTRIBUTED_KEY] = "0"
             self.db[LAST_UPDATE_KEY] = str(time.time())
             return 0
         return int(self.db[UNDISTRIBUTED_KEY])
 
     @mutex_lock
-    def update_accepted_num_and_time(self, username: str, accepted_num: int) -> None:
+    def update_accepted_num_and_time(
+        self, username: str, accepted_num: int
+    ) -> None:
         key = ACCEPTED_PREFIX + username
-        self.db[key] = str(accepted_num) + ' ' + \
-            datetime.now().strftime(DATETIME_FORMAT)
+        self.db[key] = (
+            str(accepted_num) + " " + datetime.now().strftime(DATETIME_FORMAT)
+        )
         self.db[LAST_UPDATE_KEY] = str(time.time())
 
-    def get_accepted_num_and_time(self, username: str) -> Tuple[Optional[int], Optional[str]]:
+    def get_accepted_num_and_time(
+        self, username: str
+    ) -> Tuple[Optional[int], Optional[str]]:
         key = ACCEPTED_PREFIX + username
         if key not in self.db:
             return None, None
-        accepted_num, time_str = self.db[key].decode().split(' ')
+        accepted_num, time_str = self.db[key].decode().split(" ")
         return int(accepted_num), time_str
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     pass

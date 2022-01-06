@@ -11,10 +11,10 @@ class Account:
         self.db: database.Database = db
 
     def __str__(self) -> str:
-        return f'{self.username} {self.total_balance}'
+        return f"{self.username} {self.total_balance}"
 
     def __repr__(self) -> str:
-        return f'{self.username} {self.total_balance}'
+        return f"{self.username} {self.total_balance}"
 
     def update_username(self, username: str) -> None:
         self.username = username
@@ -28,8 +28,9 @@ class Account:
         return self.db.get_user_balance(self.username)
 
     def check_today_submission(self) -> bool:
-        return webscraping.check_today_submission(self.username,
-                                                  webscraping.RETRY_NUM)
+        return webscraping.check_today_submission(
+            self.username, webscraping.RETRY_NUM
+        )
 
     def check_today_accepted(self) -> int:
         user_profile = leetcodeapi.acquire_user_profile(self.username)
@@ -42,5 +43,5 @@ class Account:
         self.db.update_accepted_num_and_time(self.username, accepted_num)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     pass

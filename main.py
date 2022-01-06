@@ -23,12 +23,12 @@ def read_config(config_file: str) -> configparser.ConfigParser:
 def parse_config(config_file: str) -> dict:
     config = read_config(config_file)
     return {
-        'usernames': config['USER']['usernames'],
+        "usernames": config["USER"]["usernames"],
     }
 
 
 def get_usernames(config: dict) -> List:
-    return config['usernames'].split(',')
+    return config["usernames"].split(",")
 
 
 def print_info(func) -> None:
@@ -37,11 +37,14 @@ def print_info(func) -> None:
         for account in ACCOUNTS:
             accepted_num, _ = account.get_accepted_num_and_time()
             print(
-                f'{account.username}:\n Balance: {account.get_balance()}, Accepted: {accepted_num}')
+                f"{account.username}:\n Balance: "
+                f"{account.get_balance()}, Accepted: {accepted_num}"
+            )
         if DATABASE is None:
             return
-        print(f'Undistributed: {DATABASE.get_undistributed_balance()}')
+        print(f"Undistributed: {DATABASE.get_undistributed_balance()}")
         print(datetime.now())
+
     return wrapper
 
 
@@ -49,7 +52,7 @@ def print_info(func) -> None:
 def init() -> None:
     if not os.path.exists(DATABASE_DIR):
         os.makedirs(DATABASE_DIR)
-    previous_db_files = glob.glob(os.path.join(DATABASE_DIR, '*'))
+    previous_db_files = glob.glob(os.path.join(DATABASE_DIR, "*"))
     for file in previous_db_files:
         os.remove(file)
     configs = parse_config(CONFIG_FILE_DIR)
@@ -70,7 +73,8 @@ def check_everyday_submission() -> None:
         return
     current_undistributed_balance = DATABASE.get_undistributed_balance()
     DATABASE.update_undistributed_balance(
-        current_undistributed_balance + DEPOSIT * len(ACCOUNTS))
+        current_undistributed_balance + DEPOSIT * len(ACCOUNTS)
+    )
     finished_accounts = []
     for account in ACCOUNTS:
         if account.check_today_submission():
@@ -79,11 +83,14 @@ def check_everyday_submission() -> None:
         return
     current_undistributed_balance = DATABASE.get_undistributed_balance()
     reward_per_account = current_undistributed_balance // len(
-        finished_accounts)
+        finished_accounts
+    )
     for account in finished_accounts:
         account.update_balance(account.get_balance() + reward_per_account)
     DATABASE.update_undistributed_balance(
-        current_undistributed_balance - reward_per_account * len(finished_accounts))
+        current_undistributed_balance
+        - reward_per_account * len(finished_accounts)
+    )
 
 
 @print_info
@@ -92,7 +99,8 @@ def check_everyday_accepted() -> None:
         return
     current_undistributed_balance = DATABASE.get_undistributed_balance()
     DATABASE.update_undistributed_balance(
-        current_undistributed_balance + DEPOSIT * len(ACCOUNTS))
+        current_undistributed_balance + DEPOSIT * len(ACCOUNTS)
+    )
     finished_accounts = []
     for account in ACCOUNTS:
         curr_balance = account.get_balance()
@@ -108,17 +116,20 @@ def check_everyday_accepted() -> None:
         return
     current_undistributed_balance = DATABASE.get_undistributed_balance()
     reward_per_account = current_undistributed_balance // len(
-        finished_accounts)
+        finished_accounts
+    )
     for account in finished_accounts:
         account.update_balance(account.get_balance() + reward_per_account)
     DATABASE.update_undistributed_balance(
-        current_undistributed_balance - reward_per_account * len(finished_accounts))
+        current_undistributed_balance
+        - reward_per_account * len(finished_accounts)
+    )
 
 
 def main() -> None:
     init()
     if DATABASE is None:
-        print('Database not initialized.')
+        print("Database not initialized.")
         return
     # check_everyday_submission()
     # check_everyday_accepted()
@@ -128,5 +139,5 @@ def main() -> None:
         schedule.run_pending()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
