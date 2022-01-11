@@ -9,6 +9,7 @@ BALANCE_PREFIX = "balance_"
 ACCEPTED_PREFIX = "accepted_"
 
 # web scraping
+ENABLE_WEB_SCRAPING = False
 CHROMEDRIVER_PATH = "/usr/bin/chromedriver"
 URL_PREFIX = "https://leetcode.com/"
 ACCPET_KEYWORD = "Accepted"
@@ -33,7 +34,7 @@ API_HEADERS = {
     "referer": "",
     "cookie": "",
 }
-API_QUERY = (
+API_USER_PROFILE_QUERY = (
     '{"operationName": "getUserProfile","variables": {"username": "%s"},'
     '"query": "query getUserProfile($username: String!) {\\n    '
     "matchedUser(username: $username) {\\n    "
@@ -42,6 +43,13 @@ API_QUERY = (
     "acSubmissionNum {\\n    difficulty\\n    "
     "count\\n    submissions\\n    __typename\\n    }\\n    __typename\\n    "
     '}\\n    __typename\\n}\\n}\\n"}'
+)
+API_RECENT_SUBMISSION_QUERY = (
+    '{"operationName":"getRecentSubmissionList","variables": {"username":"%s"},'
+    '"query":"query getRecentSubmissionList($username: String!, $limit: Int) '
+    '{\\n  recentSubmissionList(username: $username, limit: $limit) {\\n    '
+    'title\\n    titleSlug\\n    timestamp\\n    statusDisplay\\n    '
+    'lang\\n    __typename\\n  }\\n  }\\n"}'
 )
 POSTFIX_GRAPHQL = "graphql"
 

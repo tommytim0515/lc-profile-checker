@@ -1,7 +1,7 @@
-import webscraping
 import database
 import leetcodeapi
 from typing import Tuple, Optional
+from constants import ENABLE_WEB_SCRAPING
 
 
 class Account:
@@ -28,9 +28,13 @@ class Account:
         return self.db.get_user_balance(self.username)
 
     def check_today_submission(self) -> bool:
-        return webscraping.check_today_submission(
-            self.username, webscraping.RETRY_NUM
-        )
+        if ENABLE_WEB_SCRAPING:
+            import webscraping
+
+            return webscraping.check_today_submission(
+                self.username, webscraping.RETRY_NUM
+            )
+        return False
 
     def check_today_accepted(self) -> int:
         user_profile = leetcodeapi.acquire_user_profile(self.username)
