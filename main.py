@@ -122,6 +122,7 @@ def check_everyday_status(stdscr) -> None:
 
 def main(stdscr) -> None:
     init()
+    console.stdscr_print(stdscr)
     schedule.every().day.at(CHECK_TIME).do(check_everyday_status, stdscr)
     # schedule.every(15).seconds.do(check_everyday_status, stdscr)
     while True:
