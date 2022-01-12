@@ -47,11 +47,19 @@ API_USER_PROFILE_QUERY = (
 API_RECENT_SUBMISSION_QUERY = (
     '{"operationName":"getRecentSubmissionList","variables": {"username":"%s"},'
     '"query":"query getRecentSubmissionList($username: String!, $limit: Int) '
-    '{\\n  recentSubmissionList(username: $username, limit: $limit) {\\n    '
-    'title\\n    titleSlug\\n    timestamp\\n    statusDisplay\\n    '
+    "{\\n  recentSubmissionList(username: $username, limit: $limit) {\\n    "
+    "title\\n    titleSlug\\n    timestamp\\n    statusDisplay\\n    "
     'lang\\n    __typename\\n  }\\n  }\\n"}'
 )
 POSTFIX_GRAPHQL = "graphql"
+
+# console
+CONSOLE_PREFIX_LENGTH = 20
+CONSOLE_USERNAME_LENGTH = 25
+CONSOLE_BALANCE_LENGTH = 6
+CONSOLE_TOTAL_LENGTH = (
+    CONSOLE_PREFIX_LENGTH + CONSOLE_USERNAME_LENGTH + CONSOLE_BALANCE_LENGTH
+)
 
 # main
 CONFIG_FILE_DIR = "config.ini"

@@ -5,6 +5,13 @@ from constants import *
 from datetime import datetime
 from typing import Any, Callable, Tuple, Optional
 
+DATABASE = None
+
+def database():
+    global DATABASE
+    if DATABASE is None:
+        DATABASE = Database(DATABASE_NAME)
+    return DATABASE
 
 def open_database(db_name: str) -> Any:
     return dbm.open(db_name, "c")
