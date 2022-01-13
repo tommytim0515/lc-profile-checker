@@ -115,16 +115,16 @@ def check_everyday_accepted() -> None:
         - reward_per_account * len(finished_accounts)
     )
 
-
-def check_everyday_status(stdscr) -> None:
-    check_everyday_accepted()
-    console.stdscr_print(stdscr)
+def check_recent_submissions() -> None:
+    for account in ACCOUNTS:
+        account.update_recent_submission_list()
 
 def main(stdscr) -> None:
     init()
     console.stdscr_print(stdscr)
-    schedule.every().day.at(CHECK_TIME).do(check_everyday_status, stdscr)
-    # schedule.every(15).seconds.do(check_everyday_status, stdscr)
+    schedule.every().day.at(CHECK_TIME).do(check_everyday_accepted, stdscr)
+    schedule.every(5).minutes.do(check_recent_submissions)
+    schedule.every(5).seconds.do(console.stdscr_print, stdscr)
     while True:
         schedule.run_pending()
 

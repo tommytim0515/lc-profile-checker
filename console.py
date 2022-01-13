@@ -5,9 +5,9 @@ from database import database
 from constants import *
 
 
-def print_date(stdscr) -> None:
+def print_datetime(stdscr) -> None:
     stdscr.addstr("=" * CONSOLE_TOTAL_LENGTH + "\n")
-    today_date = datetime.now().strftime(DATETIME_FORMAT)
+    today_date = datetime.now().strftime(CONSOLE_DATETIME_FORMAT)
     stdscr.addstr(f"| {today_date:<{CONSOLE_TOTAL_LENGTH-3}}|\n")
 
 
@@ -54,7 +54,7 @@ def print_endline(stdscr) -> None:
 
 def stdscr_print(stdscr) -> None:
     stdscr.clear()
-    print_date(stdscr)
+    print_datetime(stdscr)
     for account in ACCOUNTS:
         print_user_profile(stdscr, account)
         print_total_accepted_num(stdscr, account)
