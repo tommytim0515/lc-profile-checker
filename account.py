@@ -40,9 +40,7 @@ class Account:
 
     def check_today_accepted(self) -> int:
         session, headers = leetcodeapi.make_session(self.username)
-        user_profile = leetcodeapi.acquire_user_profile(
-            session, headers, self.username
-        )
+        user_profile = leetcodeapi.acquire_user_profile(session, headers, self.username)
         return leetcodeapi.get_user_solved_problem_count(user_profile)
 
     def get_accepted_num_and_time(self) -> Tuple[Optional[int], Optional[str]]:
@@ -60,7 +58,6 @@ class Account:
         self.recent_submission_list = leetcodeapi.get_yesterday_accepted_submissions(
             recent_submissions
         )
-        
 
 
 ACCOUNTS: List[Account] = []

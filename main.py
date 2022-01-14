@@ -1,13 +1,14 @@
 import os
-import time
 import datetime
 import glob
 import configparser
 import console
 import curses
 import schedule
+import time
+import threading
 from typing import List
-from datetime import datetime, timedelta
+from datetime import datetime
 from account import ACCOUNTS, Account
 from database import database
 from constants import *
@@ -73,14 +74,11 @@ def check_everyday_submission() -> None:
     if len(finished_accounts) <= 0:
         return
     current_undistributed_balance = database().get_undistributed_balance()
-    reward_per_account = current_undistributed_balance // len(
-        finished_accounts
-    )
+    reward_per_account = current_undistributed_balance // len(finished_accounts)
     for account in finished_accounts:
         account.update_balance(account.get_balance() + reward_per_account)
     database().update_undistributed_balance(
-        current_undistributed_balance
-        - reward_per_account * len(finished_accounts)
+        current_undistributed_balance - reward_per_account * len(finished_accounts)
     )
 
 
@@ -105,28 +103,55 @@ def check_everyday_accepted() -> None:
     if len(finished_accounts) <= 0:
         return
     current_undistributed_balance = database().get_undistributed_balance()
-    reward_per_account = current_undistributed_balance // len(
-        finished_accounts
-    )
+    reward_per_account = current_undistributed_balance // len(finished_accounts)
     for account in finished_accounts:
         account.update_balance(account.get_balance() + reward_per_account)
     database().update_undistributed_balance(
-        current_undistributed_balance
-        - reward_per_account * len(finished_accounts)
+        current_undistributed_balance - reward_per_account * len(finished_accounts)
     )
 
+
+account_mutex = threading.Lock()
+
+
 def check_recent_submissions() -> None:
-    for account in ACCOUNTS:
-        account.update_recent_submission_list()
+    with account_mutex:
+        for account in ACCOUNTS:
+            account.update_recent_submission_list()
+
+
+def task_schedule_everyday_check() -> None:
+    schedule.every().day.at(CHECK_TIME).do(check_everyday_accepted)
+    while True:
+        schedule.run_pending()
+
+
+def task_console_print(stdscr) -> None:
+    while True:
+        with account_mutex:
+            console.stdscr_print(stdscr)
+        time.sleep(5)
+
+
+def task_check_recent_submission() -> None:
+    while True:
+        check_recent_submissions()
+        time.sleep(120)
+
 
 def main(stdscr) -> None:
     init()
     console.stdscr_print(stdscr)
-    schedule.every().day.at(CHECK_TIME).do(check_everyday_accepted, stdscr)
-    schedule.every(5).minutes.do(check_recent_submissions)
-    schedule.every(5).seconds.do(console.stdscr_print, stdscr)
-    while True:
-        schedule.run_pending()
+    t1 = threading.Thread(target=check_recent_submissions)
+    t1.start()
+    t2 = threading.Thread(target=task_schedule_everyday_check)
+    t2.start()
+    t3 = threading.Thread(target=task_console_print, args=(stdscr,))
+    t3.start()
+    t1.join()
+    t2.join()
+    t3.join()
+
 
 if __name__ == "__main__":
     curses.wrapper(main)
