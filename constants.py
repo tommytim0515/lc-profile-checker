@@ -65,4 +65,4 @@ CONSOLE_DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 # main
 CONFIG_FILE_DIR = "config.ini"
 DEPOSIT = 5
-CHECK_TIME = "00:30"
+CHECK_TIME = "02:00"

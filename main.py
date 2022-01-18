@@ -130,13 +130,13 @@ def task_console_print(stdscr) -> None:
     while True:
         with account_mutex:
             console.stdscr_print(stdscr)
-        time.sleep(5)
+        time.sleep(10)
 
 
 def task_check_recent_submission() -> None:
     while True:
         check_recent_submissions()
-        time.sleep(120)
+        time.sleep(10 * 60)
 
 
 def main(stdscr) -> None:
